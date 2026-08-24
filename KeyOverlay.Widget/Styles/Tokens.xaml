@@ -1,0 +1,177 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Hallmark · pre-emit critique: P5 H4 E5 S5 R5 V4
+         Hallmark · genre: modern-minimal · macrostructure: Workbench · theme: Cobalt-dark-adapter
+         Hallmark · slop: pass (1–58) · contrast: pass (40–41) · tokens: pass (48)
+         WPF/UWP XAML does not parse OKLCH, so these named brushes use precomputed sRGB values. -->
+
+    <Color x:Key="ColorPaper">#FF10151D</Color>
+    <Color x:Key="ColorSurface">#FF171E28</Color>
+    <Color x:Key="ColorSurfaceRaised">#FF202A37</Color>
+    <Color x:Key="ColorPressed">#FF0B1017</Color>
+    <Color x:Key="ColorRule">#FF3E4A59</Color>
+    <Color x:Key="ColorMuted">#FF9EACBC</Color>
+    <Color x:Key="ColorInk">#FFF2F6FA</Color>
+    <Color x:Key="ColorAccent">#FF3D7CFF</Color>
+    <Color x:Key="ColorAccentInk">#FF0B1017</Color>
+    <Color x:Key="ColorAccentPressed">#FF2A63DA</Color>
+    <Color x:Key="ColorDanger">#FFFF6B72</Color>
+    <Color x:Key="ColorSuccess">#FF7BD8A2</Color>
+    <Color x:Key="ColorScrim">#F210151D</Color>
+
+    <SolidColorBrush x:Key="ColorPaperBrush" Color="{StaticResource ColorPaper}" />
+    <SolidColorBrush x:Key="ColorSurfaceBrush" Color="{StaticResource ColorSurface}" />
+    <SolidColorBrush x:Key="ColorSurfaceRaisedBrush" Color="{StaticResource ColorSurfaceRaised}" />
+    <SolidColorBrush x:Key="ColorPressedBrush" Color="{StaticResource ColorPressed}" />
+    <SolidColorBrush x:Key="ColorRuleBrush" Color="{StaticResource ColorRule}" />
+    <SolidColorBrush x:Key="ColorMutedBrush" Color="{StaticResource ColorMuted}" />
+    <SolidColorBrush x:Key="ColorInkBrush" Color="{StaticResource ColorInk}" />
+    <SolidColorBrush x:Key="ColorAccentBrush" Color="{StaticResource ColorAccent}" />
+    <SolidColorBrush x:Key="ColorAccentInkBrush" Color="{StaticResource ColorAccentInk}" />
+    <SolidColorBrush x:Key="ColorAccentPressedBrush" Color="{StaticResource ColorAccentPressed}" />
+    <SolidColorBrush x:Key="ColorDangerBrush" Color="{StaticResource ColorDanger}" />
+    <SolidColorBrush x:Key="ColorSuccessBrush" Color="{StaticResource ColorSuccess}" />
+    <SolidColorBrush x:Key="ColorScrimBrush" Color="{StaticResource ColorScrim}" />
+
+    <FontFamily x:Key="FontDisplay">Cascadia Mono</FontFamily>
+    <FontFamily x:Key="FontBody">Segoe UI Variable Text</FontFamily>
+
+    <Style x:Key="DisplayTextStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontDisplay}" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource ColorInkBrush}" />
+        <Setter Property="LineHeight" Value="34" />
+    </Style>
+
+    <Style x:Key="BodyTextStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{StaticResource ColorMutedBrush}" />
+        <Setter Property="LineHeight" Value="25" />
+    </Style>
+
+    <Style x:Key="OverlayButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource ColorSurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorRuleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource ColorInkBrush}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="MinWidth" Value="44" />
+        <Setter Property="MinHeight" Value="44" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="FocusVisualPrimaryBrush" Value="{StaticResource ColorAccentBrush}" />
+        <Setter Property="FocusVisualPrimaryThickness" Value="2" />
+        <Setter Property="FocusVisualMargin" Value="2" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="Root" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="Root.Background" Value="{StaticResource ColorSurfaceRaisedBrush}" />
+                                        <Setter Target="Root.BorderBrush" Value="{StaticResource ColorAccentBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Target="Root.Background" Value="{StaticResource ColorPressedBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <VisualState.Setters>
+                                        <Setter Target="Root.Opacity" Value="0.5" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <ContentPresenter
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Padding="{TemplateBinding Padding}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTransitions="{TemplateBinding ContentTransitions}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource OverlayButtonStyle}">
+        <Setter Property="Background" Value="{StaticResource ColorAccentBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorAccentBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource ColorAccentInkBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource OverlayButtonStyle}">
+        <Setter Property="Foreground" Value="{StaticResource ColorDangerBrush}" />
+    </Style>
+
+    <Style x:Key="KeyTileContainerStyle" TargetType="GridViewItem">
+        <Setter Property="Width" Value="72" />
+        <Setter Property="Height" Value="64" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="FocusVisualPrimaryBrush" Value="{StaticResource ColorAccentBrush}" />
+        <Setter Property="FocusVisualPrimaryThickness" Value="2" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="GridViewItem">
+                    <Grid x:Name="Root" Padding="{TemplateBinding Padding}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="Tile.Background" Value="{StaticResource ColorSurfaceRaisedBrush}" />
+                                        <Setter Target="Tile.BorderBrush" Value="{StaticResource ColorAccentBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Target="Tile.Background" Value="{StaticResource ColorPressedBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <VisualState.Setters>
+                                        <Setter Target="Root.Opacity" Value="0.5" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="SelectionStates">
+                                <VisualState x:Name="Unselected" />
+                                <VisualState x:Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Target="Tile.BorderBrush" Value="{StaticResource ColorAccentBrush}" />
+                                        <Setter Target="SelectionMark.Opacity" Value="1" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="SelectedUnfocused">
+                                    <VisualState.Setters>
+                                        <Setter Target="Tile.BorderBrush" Value="{StaticResource ColorAccentBrush}" />
+                                        <Setter Target="SelectionMark.Opacity" Value="1" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border x:Name="Tile" Background="{StaticResource ColorSurfaceBrush}" BorderBrush="{StaticResource ColorRuleBrush}" BorderThickness="1" CornerRadius="6">
+                            <Grid>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <Border x:Name="SelectionMark" Width="6" Height="6" Margin="0,6,6,0" HorizontalAlignment="Right" VerticalAlignment="Top" Background="{StaticResource ColorAccentBrush}" CornerRadius="3" Opacity="0" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

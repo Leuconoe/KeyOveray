@@ -1,0 +1,11 @@
+.vs/
+.hallmark/
+**/bin/
+**/obj/
+packages/
+KeyOverlay.Widget/AppPackages/
+artifacts/
+*.cer
+*.pfx
+*.user
+*.suo

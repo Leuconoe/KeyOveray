@@ -1,0 +1,90 @@
+<Page
+    x:Class="KeyOverlay.Widget.OverlayPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <Grid x:Name="RootGrid" Background="{StaticResource ColorPaperBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" BorderBrush="{StaticResource ColorRuleBrush}" BorderThickness="0,0,0,1" Padding="12,6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center" Spacing="1">
+                    <TextBlock Text="KEY GRID" FontFamily="{StaticResource FontDisplay}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource ColorInkBrush}" />
+                    <TextBlock x:Name="StatusText" Text="입력 브리지 준비 중" FontFamily="{StaticResource FontBody}" FontSize="12" Foreground="{StaticResource ColorMutedBrush}" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                    <Button Content="중앙" Click="CenterButton_Click" Style="{StaticResource OverlayButtonStyle}" AutomationProperties.Name="화면 중앙으로 이동" />
+                    <Button x:Name="EditButton" Content="편집" Click="EditButton_Click" Style="{StaticResource OverlayButtonStyle}" AutomationProperties.Name="키 배열 편집" />
+                    <Button x:Name="CollapseButton" Content="접기" Click="CollapseButton_Click" Style="{StaticResource OverlayButtonStyle}" AutomationProperties.Name="오버레이 접기 또는 펼치기" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border x:Name="EditPanel" Grid.Row="1" Visibility="Collapsed" Background="{StaticResource ColorSurfaceBrush}" BorderBrush="{StaticResource ColorRuleBrush}" BorderThickness="0,0,0,1" Padding="12,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Content="키 추가" Click="AddKeyButton_Click" Style="{StaticResource PrimaryButtonStyle}" AutomationProperties.Name="새 키 추가" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                    <Button Content="−" Click="RemoveColumnButton_Click" Style="{StaticResource OverlayButtonStyle}" AutomationProperties.Name="그리드 열 줄이기" />
+                    <TextBlock x:Name="ColumnCountText" MinWidth="48" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontFamily="{StaticResource FontDisplay}" Foreground="{StaticResource ColorInkBrush}" />
+                    <Button Content="+" Click="AddColumnButton_Click" Style="{StaticResource OverlayButtonStyle}" AutomationProperties.Name="그리드 열 늘리기" />
+                </StackPanel>
+                <Button x:Name="DeleteButton" Grid.Column="2" Content="선택 삭제" Click="DeleteButton_Click" IsEnabled="False" Style="{StaticResource DangerButtonStyle}" AutomationProperties.Name="선택한 키 삭제" />
+            </Grid>
+        </Border>
+
+        <Grid x:Name="GridBody" Grid.Row="2" Padding="12">
+            <GridView
+                x:Name="KeyGrid"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ItemContainerStyle="{StaticResource KeyTileContainerStyle}"
+                IsItemClickEnabled="True"
+                IsSwipeEnabled="False"
+                SelectionMode="None"
+                ItemClick="KeyGrid_ItemClick"
+                SelectionChanged="KeyGrid_SelectionChanged"
+                DragItemsCompleted="KeyGrid_DragItemsCompleted"
+                AutomationProperties.Name="등록된 키 배열">
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="5" />
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid AutomationProperties.Name="{Binding DisplayName}">
+                            <TextBlock Text="{Binding DisplayName}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="NoWrap" FontFamily="{StaticResource FontDisplay}" FontSize="17" FontWeight="SemiBold" Foreground="{StaticResource ColorInkBrush}" />
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+            <TextBlock x:Name="EmptyStateText" Text="등록된 키가 없습니다. 편집에서 키를 추가하세요." Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{StaticResource FontBody}" FontSize="14" Foreground="{StaticResource ColorMutedBrush}" TextWrapping="Wrap" TextAlignment="Center" />
+        </Grid>
+
+        <Border x:Name="CapturePanel" Grid.RowSpan="3" Visibility="Collapsed" Background="{StaticResource ColorScrimBrush}" Padding="24">
+            <StackPanel MaxWidth="360" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                <TextBlock Text="등록할 키를 누르세요" HorizontalAlignment="Center" Style="{StaticResource DisplayTextStyle}" FontSize="22" TextAlignment="Center" />
+                <TextBlock Text="Ctrl, Alt, Shift 조합도 함께 등록됩니다. 취소하려면 아래 버튼을 누르세요." HorizontalAlignment="Center" Style="{StaticResource BodyTextStyle}" FontSize="14" TextAlignment="Center" TextWrapping="Wrap" />
+                <Button x:Name="CaptureSink" Content="키 입력 대기" HorizontalAlignment="Stretch" KeyDown="CaptureSink_KeyDown" Style="{StaticResource PrimaryButtonStyle}" AutomationProperties.Name="등록할 키 입력" />
+                <Button Content="취소" HorizontalAlignment="Stretch" Click="CancelCaptureButton_Click" Style="{StaticResource OverlayButtonStyle}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>
