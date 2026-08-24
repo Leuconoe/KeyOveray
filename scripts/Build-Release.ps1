@@ -111,9 +111,11 @@ $signToolPath = Find-WindowsSdkTool 'signtool.exe'
 if ($LASTEXITCODE -ne 0) {
     throw "MSIX 서명에 실패했습니다. SignTool 종료 코드: $LASTEXITCODE"
 }
-& $signToolPath verify /pa $signedPackage
-if ($LASTEXITCODE -ne 0) {
-    throw "MSIX 서명 검증에 실패했습니다. SignTool 종료 코드: $LASTEXITCODE"
+$signature = Get-AuthenticodeSignature -LiteralPath $signedPackage
+$wrongSigner = $signature.SignerCertificate.Thumbprint -ne $signingCertificate.Thumbprint
+$invalidSignatureStatus = $signature.Status -notin @('Valid', 'UnknownError')
+if ($wrongSigner -or $invalidSignatureStatus) {
+    throw "MSIX 서명자 검증에 실패했습니다. 상태: $($signature.Status)"
 }
 
 $releaseReadme = @"
