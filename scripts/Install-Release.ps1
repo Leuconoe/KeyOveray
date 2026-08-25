@@ -58,18 +58,14 @@ Get-Process -Name 'KeyOverlay.Widget', 'InputBridge' -ErrorAction SilentlyContin
 
 $existingPackages = Get-AppxPackage -Name 'KeyOverlay.GameBarWidget'
 foreach ($existingPackage in $existingPackages) {
-    $isLoosePackage = -not $existingPackage.InstallLocation.StartsWith(
-        (Join-Path $env:ProgramFiles 'WindowsApps'),
-        [System.StringComparison]::OrdinalIgnoreCase)
-    if ($isLoosePackage -or [version]$existingPackage.Version -eq $releaseVersion) {
-        Remove-AppxPackage -Package $existingPackage.PackageFullName
-    }
+    Remove-AppxPackage -Package $existingPackage.PackageFullName
 }
 
 Add-AppxPackage -Path $package.FullName -DependencyPath $dependencies.FullName -ForceApplicationShutdown
 
 $installedPackage = Get-AppxPackage -Name 'KeyOverlay.GameBarWidget' | Select-Object -First 1
-if (-not $installedPackage -or $installedPackage.Status -ne 'Ok') {
+if (-not $installedPackage -or $installedPackage.Status -ne 'Ok' `
+    -or [version]$installedPackage.Version -ne $releaseVersion) {
     throw 'Key Overlay 설치 상태를 확인하지 못했습니다.'
 }
 
