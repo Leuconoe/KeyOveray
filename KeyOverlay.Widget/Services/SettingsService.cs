@@ -11,6 +11,8 @@ namespace KeyOverlay.Widget.Services
     {
         public int Columns { get; set; } = 5;
         public bool IsCollapsed { get; set; }
+        public double ButtonOpacity { get; set; } = 0.72;
+        public double BackgroundOpacity { get; set; }
         public List<KeyButtonDefinition> Keys { get; } = new List<KeyButtonDefinition>();
     }
 
@@ -30,6 +32,10 @@ namespace KeyOverlay.Widget.Services
                     loadedFromStorage = true;
                     settings.Columns = Math.Max(2, Math.Min(8, (int)root.GetNamedNumber("columns", 5)));
                     settings.IsCollapsed = root.GetNamedBoolean("collapsed", false);
+                    settings.ButtonOpacity = Math.Max(0.25,
+                        Math.Min(1.0, root.GetNamedNumber("buttonOpacity", 0.72)));
+                    settings.BackgroundOpacity = Math.Max(0.0,
+                        Math.Min(1.0, root.GetNamedNumber("backgroundOpacity", 0.0)));
 
                     foreach (var item in root.GetNamedArray("keys", new JsonArray()))
                     {
@@ -64,7 +70,8 @@ namespace KeyOverlay.Widget.Services
             return settings;
         }
 
-        public static void Save(int columns, bool isCollapsed, IEnumerable<KeyButtonDefinition> keys)
+        public static void Save(int columns, bool isCollapsed, double buttonOpacity,
+            double backgroundOpacity, IEnumerable<KeyButtonDefinition> keys)
         {
             var keyArray = new JsonArray();
             foreach (var key in keys)
@@ -83,6 +90,8 @@ namespace KeyOverlay.Widget.Services
             {
                 ["columns"] = JsonValue.CreateNumberValue(columns),
                 ["collapsed"] = JsonValue.CreateBooleanValue(isCollapsed),
+                ["buttonOpacity"] = JsonValue.CreateNumberValue(buttonOpacity),
+                ["backgroundOpacity"] = JsonValue.CreateNumberValue(backgroundOpacity),
                 ["keys"] = keyArray
             };
             ApplicationData.Current.LocalSettings.Values[SettingsKey] = root.Stringify();

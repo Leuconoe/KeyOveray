@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Tag = 'v1.0.1'
+    [string]$Tag = 'v1.1.0'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -129,7 +129,8 @@ Key Overlay $Tag (x64)
 
 3. Win + G를 누르고 위젯 메뉴에서 Key Overlay를 연 뒤 핀을 켭니다.
 
-Install.ps1은 현재 사용자 TrustedPeople 저장소에 공개 서명 인증서를 등록하고,
+Install.ps1은 UAC 관리자 권한을 요청하여 로컬 컴퓨터 TrustedPeople 저장소에
+공개 서명 인증서를 등록하고,
 Microsoft 서명 x64 런타임 종속성과 Key Overlay MSIX를 설치합니다.
 제거하려면 Uninstall.ps1을 실행하세요.
 "@

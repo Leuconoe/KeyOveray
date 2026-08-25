@@ -12,6 +12,7 @@ using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -27,6 +28,8 @@ namespace KeyOverlay.Widget
         private bool _isEditMode;
         private bool _isCollapsed;
         private int _columns;
+        private double _buttonOpacity;
+        private double _backgroundOpacity;
         private Size? _expandedWindowSize;
         private int _resizeRevision;
 
@@ -40,10 +43,19 @@ namespace KeyOverlay.Widget
             var settings = SettingsService.Load();
             _columns = settings.Columns;
             _isCollapsed = settings.IsCollapsed;
+            _buttonOpacity = settings.ButtonOpacity;
+            _backgroundOpacity = settings.BackgroundOpacity;
             foreach (var key in settings.Keys)
             {
                 Keys.Add(key);
             }
+
+            ButtonOpacitySlider.Value = _buttonOpacity * 100;
+            ButtonOpacitySlider.ValueChanged += ButtonOpacitySlider_ValueChanged;
+            ApplyButtonOpacity();
+            BackgroundOpacitySlider.Value = _backgroundOpacity * 100;
+            BackgroundOpacitySlider.ValueChanged += BackgroundOpacitySlider_ValueChanged;
+            ApplyBackgroundOpacity();
 
             Keys.CollectionChanged += Keys_CollectionChanged;
             KeyGrid.ItemsSource = Keys;
@@ -421,6 +433,38 @@ namespace KeyOverlay.Widget
             await ResizeWidgetAsync();
         }
 
+        private void ButtonOpacitySlider_ValueChanged(object sender,
+            RangeBaseValueChangedEventArgs e)
+        {
+            _buttonOpacity = e.NewValue / 100.0;
+            ApplyButtonOpacity();
+            SaveSettings();
+        }
+
+        private void ApplyButtonOpacity()
+        {
+            ResourceBrush("ColorSurfaceBrush").Opacity = _buttonOpacity;
+            ResourceBrush("ColorSurfaceRaisedBrush").Opacity = Math.Min(1.0, _buttonOpacity + 0.12);
+            ResourceBrush("ColorPressedBrush").Opacity = Math.Min(1.0, _buttonOpacity + 0.18);
+            ResourceBrush("ColorAccentSurfaceBrush").Opacity = Math.Min(1.0, _buttonOpacity + 0.10);
+            ResourceBrush("ColorRuleBrush").Opacity = _buttonOpacity;
+            ButtonOpacityValueText.Text = Math.Round(_buttonOpacity * 100) + "%";
+        }
+
+        private void BackgroundOpacitySlider_ValueChanged(object sender,
+            RangeBaseValueChangedEventArgs e)
+        {
+            _backgroundOpacity = e.NewValue / 100.0;
+            ApplyBackgroundOpacity();
+            SaveSettings();
+        }
+
+        private void ApplyBackgroundOpacity()
+        {
+            OverlayBackgroundBrush.Opacity = _backgroundOpacity;
+            BackgroundOpacityValueText.Text = Math.Round(_backgroundOpacity * 100) + "%";
+        }
+
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             if (KeyGrid.SelectedItem is KeyButtonDefinition selected)
@@ -455,10 +499,10 @@ namespace KeyOverlay.Widget
 
         private Size CalculateExpandedWindowSize()
         {
-            var minimumWidth = _isEditMode ? 440 : 320;
+            var minimumWidth = _isEditMode ? 520 : 320;
             var width = Math.Max(minimumWidth, _columns * 72 + 32);
             var rows = Math.Max(1, (int)Math.Ceiling(Keys.Count / (double)_columns));
-            var height = 76 + rows * 64 + (_isEditMode ? 64 : 0);
+            var height = 76 + rows * 64 + (_isEditMode ? 144 : 0);
             return new Size(width, Math.Min(700, height));
         }
 
@@ -536,7 +580,7 @@ namespace KeyOverlay.Widget
 
         private void SaveSettings()
         {
-            SettingsService.Save(_columns, _isCollapsed, Keys);
+            SettingsService.Save(_columns, _isCollapsed, _buttonOpacity, _backgroundOpacity, Keys);
         }
 
         private static Brush ResourceBrush(string key)

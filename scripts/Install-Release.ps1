@@ -3,6 +3,22 @@ param()
 
 $ErrorActionPreference = 'Stop'
 
+$currentIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+$currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal($currentIdentity)
+$isAdministrator = $currentPrincipal.IsInRole(
+    [System.Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdministrator) {
+    Write-Host '인증서 등록을 위해 관리자 권한을 요청합니다.' -ForegroundColor Yellow
+    $powerShellPath = (Get-Process -Id $PID).Path
+    $elevatedArguments = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
+    $elevatedProcess = Start-Process -FilePath $powerShellPath -Verb RunAs `
+        -ArgumentList $elevatedArguments -Wait -PassThru
+    if ($elevatedProcess.ExitCode -ne 0) {
+        throw "관리자 권한 설치가 완료되지 않았습니다. 종료 코드: $($elevatedProcess.ExitCode)"
+    }
+    return
+}
+
 $package = Get-ChildItem -LiteralPath $PSScriptRoot -File -Filter 'KeyOverlay.Widget_*_x64.msix' |
     Select-Object -First 1
 if (-not $package) {
@@ -19,11 +35,24 @@ if (-not (Test-Path -LiteralPath $certificatePath)) {
 }
 
 $certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($certificatePath)
-$trustedCertificate = Get-ChildItem -LiteralPath 'Cert:\CurrentUser\TrustedPeople' |
+$signature = Get-AuthenticodeSignature -LiteralPath $package.FullName
+if (-not $signature.SignerCertificate `
+    -or $signature.SignerCertificate.Thumbprint -ne $certificate.Thumbprint) {
+    throw 'MSIX 서명과 포함된 인증서가 일치하지 않습니다.'
+}
+
+$trustedCertificate = Get-ChildItem -LiteralPath 'Cert:\LocalMachine\TrustedPeople' |
     Where-Object Thumbprint -eq $certificate.Thumbprint |
     Select-Object -First 1
 if (-not $trustedCertificate) {
-    Import-Certificate -FilePath $certificatePath -CertStoreLocation 'Cert:\CurrentUser\TrustedPeople' | Out-Null
+    Import-Certificate -FilePath $certificatePath `
+        -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
+}
+$trustedCertificate = Get-ChildItem -LiteralPath 'Cert:\LocalMachine\TrustedPeople' |
+    Where-Object Thumbprint -eq $certificate.Thumbprint |
+    Select-Object -First 1
+if (-not $trustedCertificate) {
+    throw 'Key Overlay 서명 인증서를 신뢰 저장소에 등록하지 못했습니다.'
 }
 
 $dependencies = Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'Dependencies\x64') `

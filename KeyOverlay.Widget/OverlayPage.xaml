@@ -7,7 +7,10 @@
     mc:Ignorable="d"
     Background="Transparent">
 
-    <Grid x:Name="RootGrid" Background="{StaticResource ColorPaperBrush}">
+    <Grid x:Name="RootGrid">
+        <Grid.Background>
+            <SolidColorBrush x:Name="OverlayBackgroundBrush" Color="{StaticResource ColorPaper}" Opacity="0" />
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="56" />
             <RowDefinition Height="Auto" />
@@ -32,13 +35,18 @@
             </Grid>
         </Border>
 
-        <Border x:Name="EditPanel" Grid.Row="1" Visibility="Collapsed" Background="{StaticResource ColorSurfaceBrush}" BorderBrush="{StaticResource ColorRuleBrush}" BorderThickness="0,0,0,1" Padding="12,8">
+        <Border x:Name="EditPanel" Grid.Row="1" Visibility="Collapsed" Background="Transparent" BorderBrush="{StaticResource ColorRuleBrush}" BorderThickness="0,0,0,1" Padding="12,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
                 <Button Content="키 추가" Click="AddKeyButton_Click" Style="{StaticResource PrimaryButtonStyle}" AutomationProperties.Name="새 키 추가" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
                     <Button Content="−" Click="RemoveColumnButton_Click" Style="{StaticResource OverlayButtonStyle}" AutomationProperties.Name="그리드 열 줄이기" />
@@ -46,6 +54,26 @@
                     <Button Content="+" Click="AddColumnButton_Click" Style="{StaticResource OverlayButtonStyle}" AutomationProperties.Name="그리드 열 늘리기" />
                 </StackPanel>
                 <Button x:Name="DeleteButton" Grid.Column="2" Content="선택 삭제" Click="DeleteButton_Click" IsEnabled="False" Style="{StaticResource DangerButtonStyle}" AutomationProperties.Name="선택한 키 삭제" />
+                <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="48" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="버튼 투명도" VerticalAlignment="Center" FontFamily="{StaticResource FontBody}" FontSize="12" Foreground="{StaticResource ColorMutedBrush}" />
+                    <Slider x:Name="ButtonOpacitySlider" Grid.Column="1" Margin="12,0" Minimum="25" Maximum="100" StepFrequency="5" VerticalAlignment="Center" AutomationProperties.Name="버튼 투명도" />
+                    <TextBlock x:Name="ButtonOpacityValueText" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" TextAlignment="Right" FontFamily="{StaticResource FontDisplay}" FontSize="12" Foreground="{StaticResource ColorInkBrush}" />
+                </Grid>
+                <Grid Grid.Row="2" Grid.ColumnSpan="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="48" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="배경 투명도" VerticalAlignment="Center" FontFamily="{StaticResource FontBody}" FontSize="12" Foreground="{StaticResource ColorMutedBrush}" />
+                    <Slider x:Name="BackgroundOpacitySlider" Grid.Column="1" Margin="12,0" Minimum="0" Maximum="100" StepFrequency="5" VerticalAlignment="Center" AutomationProperties.Name="배경 투명도" />
+                    <TextBlock x:Name="BackgroundOpacityValueText" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" TextAlignment="Right" FontFamily="{StaticResource FontDisplay}" FontSize="12" Foreground="{StaticResource ColorInkBrush}" />
+                </Grid>
             </Grid>
         </Border>
 

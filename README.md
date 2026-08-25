@@ -8,6 +8,7 @@
 - 게임 탐지나 특정 게임 창 핸들에 의존하지 않는 Windows 전역 키 입력
 - `Ctrl` / `Shift` / `Alt` / `Win` 조합
 - 키 추가·삭제, 2–8열 설정, 드래그 순서 변경
+- 0–100% 배경 투명도와 25–100% 버튼 투명도 개별 조절
 - Game Bar 제목 표시줄을 이용한 이동과 핀 고정
 - 한 줄로 접기 및 펼치기
 - 수동 중앙 정렬
@@ -17,7 +18,7 @@
 
 ## 릴리즈 설치
 
-Visual Studio 없이 설치하려면 [최신 GitHub Release](https://github.com/Leuconoe/KeyOveray/releases/latest)의 `KeyOverlay-v1.0.1-x64.zip`을 사용합니다.
+Visual Studio 없이 설치하려면 [최신 GitHub Release](https://github.com/Leuconoe/KeyOveray/releases/latest)의 `KeyOverlay-v1.1.0-x64.zip`을 사용합니다.
 
 1. ZIP을 완전히 압축 해제합니다.
 2. 압축을 푼 폴더에서 PowerShell을 엽니다.
@@ -28,14 +29,14 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 .\Install.ps1
 ```
 
-`Install.ps1`은 현재 사용자 계정의 `TrustedPeople` 인증서 저장소에 Key Overlay 공개 서명 인증서를 등록하고, Microsoft 서명 x64 런타임 종속성과 Key Overlay MSIX를 설치합니다. 관리자 PowerShell과 Visual Studio는 필요하지 않습니다.
+`Install.ps1`은 UAC 관리자 권한을 요청하여 로컬 컴퓨터의 `TrustedPeople` 인증서 저장소에 Key Overlay 공개 서명 인증서를 등록하고, Microsoft 서명 x64 런타임 종속성과 Key Overlay MSIX를 설치합니다. PowerShell을 미리 관리자 권한으로 열거나 Visual Studio를 설치할 필요는 없습니다.
 
 설치 후 `Win + G`를 누르고 위젯 메뉴에서 **Key Overlay**를 연 뒤 핀을 켭니다. 제거하려면 릴리즈 폴더의 `Uninstall.ps1`을 실행합니다.
 
 릴리즈 ZIP의 무결성은 함께 제공되는 `.sha256` 파일과 비교할 수 있습니다.
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\KeyOverlay-v1.0.1-x64.zip
+Get-FileHash -Algorithm SHA256 .\KeyOverlay-v1.1.0-x64.zip
 ```
 
 ## 소스 빌드 설치 요구 사항
@@ -158,7 +159,9 @@ Test-Path (Join-Path $package.InstallLocation 'GameBar\Icons\icon.targetsize-44.
 5. 타일을 끌어 순서를 변경합니다.
 6. `−` 또는 `+`로 열 수를 2–8 사이에서 변경합니다.
 7. 키를 선택한 뒤 `선택 삭제`로 제거합니다.
-8. `완료`를 누릅니다.
+8. `버튼 투명도` 슬라이더로 버튼 배경의 투명도를 조정합니다.
+9. `배경 투명도` 슬라이더로 위젯 바탕의 투명도를 별도로 조정합니다.
+10. `완료`를 누릅니다.
 
 설정은 현재 Windows 사용자 계정의 UWP 로컬 설정에 저장됩니다.
 
