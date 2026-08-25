@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Tag = 'v1.1.1'
+    [string]$Tag = 'v1.1.2'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -78,6 +78,8 @@ $signedPackage = Join-Path $resolvedStaging "KeyOverlay.Widget_${packageVersion}
 Copy-Item -LiteralPath $unsignedPackage -Destination $signedPackage
 Copy-Utf8BomText (Join-Path $PSScriptRoot 'Install-Release.ps1') `
     (Join-Path $resolvedStaging 'Install.ps1')
+Copy-Utf8BomText (Join-Path $PSScriptRoot 'Install-Certificate.ps1') `
+    (Join-Path $resolvedStaging 'Install-Certificate.ps1')
 Copy-Utf8BomText (Join-Path $PSScriptRoot 'Uninstall.ps1') `
     (Join-Path $resolvedStaging 'Uninstall.ps1')
 

@@ -39,17 +39,18 @@ if (-not $trustedCertificate) {
     }
     else {
         Write-Host '인증서 등록을 위해 관리자 권한을 요청합니다.' -ForegroundColor Yellow
-        $escapedCertificatePath = $certificatePath.Replace("'", "''")
-        $importCommand = "`$ErrorActionPreference = 'Stop'; " +
-            "Import-Certificate -FilePath '$escapedCertificatePath' " +
-            "-CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null"
-        $encodedCommand = [Convert]::ToBase64String(
-            [Text.Encoding]::Unicode.GetBytes($importCommand))
+        $certificateInstaller = Join-Path $PSScriptRoot 'Install-Certificate.ps1'
+        if (-not (Test-Path -LiteralPath $certificateInstaller)) {
+            throw '인증서 설치 도우미를 찾지 못했습니다.'
+        }
         $windowsPowerShell = Join-Path $env:SystemRoot `
             'System32\WindowsPowerShell\v1.0\powershell.exe'
+        $elevatedArguments = "-NoProfile -ExecutionPolicy Bypass " +
+            "-File `"$certificateInstaller`" " +
+            "-CertificatePath `"$certificatePath`" " +
+            "-ExpectedThumbprint `"$($certificate.Thumbprint)`""
         $elevatedProcess = Start-Process -FilePath $windowsPowerShell -Verb RunAs `
-            -ArgumentList "-NoProfile -EncodedCommand $encodedCommand" `
-            -WindowStyle Hidden -Wait -PassThru
+            -ArgumentList $elevatedArguments -Wait -PassThru
         if ($elevatedProcess.ExitCode -ne 0) {
             throw "인증서 등록이 완료되지 않았습니다. 종료 코드: $($elevatedProcess.ExitCode)"
         }
