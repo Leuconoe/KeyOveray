@@ -3,22 +3,6 @@ param()
 
 $ErrorActionPreference = 'Stop'
 
-$currentIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-$currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal($currentIdentity)
-$isAdministrator = $currentPrincipal.IsInRole(
-    [System.Security.Principal.WindowsBuiltInRole]::Administrator)
-if (-not $isAdministrator) {
-    Write-Host '인증서 등록을 위해 관리자 권한을 요청합니다.' -ForegroundColor Yellow
-    $powerShellPath = (Get-Process -Id $PID).Path
-    $elevatedArguments = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
-    $elevatedProcess = Start-Process -FilePath $powerShellPath -Verb RunAs `
-        -ArgumentList $elevatedArguments -Wait -PassThru
-    if ($elevatedProcess.ExitCode -ne 0) {
-        throw "관리자 권한 설치가 완료되지 않았습니다. 종료 코드: $($elevatedProcess.ExitCode)"
-    }
-    return
-}
-
 $package = Get-ChildItem -LiteralPath $PSScriptRoot -File -Filter 'KeyOverlay.Widget_*_x64.msix' |
     Select-Object -First 1
 if (-not $package) {
@@ -45,8 +29,31 @@ $trustedCertificate = Get-ChildItem -LiteralPath 'Cert:\LocalMachine\TrustedPeop
     Where-Object Thumbprint -eq $certificate.Thumbprint |
     Select-Object -First 1
 if (-not $trustedCertificate) {
-    Import-Certificate -FilePath $certificatePath `
-        -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
+    $currentIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+    $currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal($currentIdentity)
+    $isAdministrator = $currentPrincipal.IsInRole(
+        [System.Security.Principal.WindowsBuiltInRole]::Administrator)
+    if ($isAdministrator) {
+        Import-Certificate -FilePath $certificatePath `
+            -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
+    }
+    else {
+        Write-Host '인증서 등록을 위해 관리자 권한을 요청합니다.' -ForegroundColor Yellow
+        $escapedCertificatePath = $certificatePath.Replace("'", "''")
+        $importCommand = "`$ErrorActionPreference = 'Stop'; " +
+            "Import-Certificate -FilePath '$escapedCertificatePath' " +
+            "-CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null"
+        $encodedCommand = [Convert]::ToBase64String(
+            [Text.Encoding]::Unicode.GetBytes($importCommand))
+        $windowsPowerShell = Join-Path $env:SystemRoot `
+            'System32\WindowsPowerShell\v1.0\powershell.exe'
+        $elevatedProcess = Start-Process -FilePath $windowsPowerShell -Verb RunAs `
+            -ArgumentList "-NoProfile -EncodedCommand $encodedCommand" `
+            -WindowStyle Hidden -Wait -PassThru
+        if ($elevatedProcess.ExitCode -ne 0) {
+            throw "인증서 등록이 완료되지 않았습니다. 종료 코드: $($elevatedProcess.ExitCode)"
+        }
+    }
 }
 $trustedCertificate = Get-ChildItem -LiteralPath 'Cert:\LocalMachine\TrustedPeople' |
     Where-Object Thumbprint -eq $certificate.Thumbprint |

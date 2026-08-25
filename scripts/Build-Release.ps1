@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Tag = 'v1.1.0'
+    [string]$Tag = 'v1.1.1'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -38,6 +38,12 @@ function Find-WindowsSdkTool([string]$name) {
     return $tool.FullName
 }
 
+function Copy-Utf8BomText([string]$source, [string]$destination) {
+    $content = [System.IO.File]::ReadAllText($source)
+    $utf8Bom = New-Object System.Text.UTF8Encoding($true)
+    [System.IO.File]::WriteAllText($destination, $content, $utf8Bom)
+}
+
 [xml]$manifest = Get-Content -Raw -LiteralPath $manifestPath
 $identity = $manifest.Package.Identity
 $packageVersion = [string]$identity.Version
@@ -70,8 +76,10 @@ New-Item -ItemType Directory -Path $resolvedStaging | Out-Null
 
 $signedPackage = Join-Path $resolvedStaging "KeyOverlay.Widget_${packageVersion}_x64.msix"
 Copy-Item -LiteralPath $unsignedPackage -Destination $signedPackage
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Install-Release.ps1') -Destination (Join-Path $resolvedStaging 'Install.ps1')
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Uninstall.ps1') -Destination (Join-Path $resolvedStaging 'Uninstall.ps1')
+Copy-Utf8BomText (Join-Path $PSScriptRoot 'Install-Release.ps1') `
+    (Join-Path $resolvedStaging 'Install.ps1')
+Copy-Utf8BomText (Join-Path $PSScriptRoot 'Uninstall.ps1') `
+    (Join-Path $resolvedStaging 'Uninstall.ps1')
 
 $dependencySource = Join-Path $packageDirectory 'Dependencies\x64'
 $dependencyDestination = Join-Path $resolvedStaging 'Dependencies\x64'

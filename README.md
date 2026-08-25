@@ -18,7 +18,7 @@
 
 ## 릴리즈 설치
 
-Visual Studio 없이 설치하려면 [최신 GitHub Release](https://github.com/Leuconoe/KeyOveray/releases/latest)의 `KeyOverlay-v1.1.0-x64.zip`을 사용합니다.
+Visual Studio 없이 설치하려면 [최신 GitHub Release](https://github.com/Leuconoe/KeyOveray/releases/latest)의 `KeyOverlay-v1.1.1-x64.zip`을 사용합니다.
 
 1. ZIP을 완전히 압축 해제합니다.
 2. 압축을 푼 폴더에서 PowerShell을 엽니다.
@@ -36,7 +36,7 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 릴리즈 ZIP의 무결성은 함께 제공되는 `.sha256` 파일과 비교할 수 있습니다.
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\KeyOverlay-v1.1.0-x64.zip
+Get-FileHash -Algorithm SHA256 .\KeyOverlay-v1.1.1-x64.zip
 ```
 
 ## 소스 빌드 설치 요구 사항
