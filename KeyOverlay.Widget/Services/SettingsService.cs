@@ -62,9 +62,10 @@ namespace KeyOverlay.Widget.Services
                 settings.Keys.Add(KeyButtonDefinition.Create(0x32, "2"));
                 settings.Keys.Add(KeyButtonDefinition.Create(0x33, "3"));
                 settings.Keys.Add(KeyButtonDefinition.Create(0x34, "4"));
-                settings.Keys.Add(KeyButtonDefinition.Create(0x35, "5"));
+                settings.Keys.Add(KeyButtonDefinition.Create(0x71, "F2"));
                 settings.Keys.Add(KeyButtonDefinition.Create(0x73, "F4"));
-                settings.Keys.Add(KeyButtonDefinition.Create(0x79, "F10"));
+                settings.Keys.Add(KeyButtonDefinition.Create(0x74, "F5"));
+                settings.Keys.Add(KeyButtonDefinition.Create(0x76, "F7"));
             }
 
             return settings;
