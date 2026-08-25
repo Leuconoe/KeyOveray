@@ -18,10 +18,10 @@
 
 ## 릴리즈 설치
 
-Visual Studio 없이 설치하려면 [최신 GitHub Release](https://github.com/Leuconoe/KeyOveray/releases/latest)의 `KeyOverlay-v1.1.2-x64.zip`을 사용합니다.
+Visual Studio 없이 설치하려면 [최신 GitHub Release](https://github.com/Leuconoe/KeyOveray/releases/latest)의 `KeyOverlay-v1.1.3-x64.zip`을 사용합니다.
 
 1. ZIP을 완전히 압축 해제합니다.
-2. 압축을 푼 폴더에서 PowerShell을 엽니다.
+2. 압축을 푼 폴더에서 PowerShell을 **관리자 권한으로** 엽니다.
 3. 다음 명령을 실행합니다.
 
 ```powershell
@@ -29,14 +29,14 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 .\Install.ps1
 ```
 
-`Install.ps1`은 UAC 관리자 권한을 요청하여 로컬 컴퓨터의 `TrustedPeople` 인증서 저장소에 Key Overlay 공개 서명 인증서를 등록하고, Microsoft 서명 x64 런타임 종속성과 Key Overlay MSIX를 설치합니다. PowerShell을 미리 관리자 권한으로 열거나 Visual Studio를 설치할 필요는 없습니다.
+`Install.ps1`은 관리자 권한이 아니면 즉시 중단됩니다. 관리자 PowerShell에서 로컬 컴퓨터의 `TrustedPeople` 인증서 저장소에 Key Overlay 공개 서명 인증서를 등록하고, Microsoft 서명 x64 런타임 종속성과 Key Overlay MSIX를 설치합니다. Visual Studio는 필요하지 않습니다.
 
 설치 후 `Win + G`를 누르고 위젯 메뉴에서 **Key Overlay**를 연 뒤 핀을 켭니다. 제거하려면 릴리즈 폴더의 `Uninstall.ps1`을 실행합니다.
 
 릴리즈 ZIP의 무결성은 함께 제공되는 `.sha256` 파일과 비교할 수 있습니다.
 
 ```powershell
-Get-FileHash -Algorithm SHA256 .\KeyOverlay-v1.1.2-x64.zip
+Get-FileHash -Algorithm SHA256 .\KeyOverlay-v1.1.3-x64.zip
 ```
 
 ## 소스 빌드 설치 요구 사항

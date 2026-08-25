@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Tag = 'v1.1.2'
+    [string]$Tag = 'v1.1.3'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -78,8 +78,6 @@ $signedPackage = Join-Path $resolvedStaging "KeyOverlay.Widget_${packageVersion}
 Copy-Item -LiteralPath $unsignedPackage -Destination $signedPackage
 Copy-Utf8BomText (Join-Path $PSScriptRoot 'Install-Release.ps1') `
     (Join-Path $resolvedStaging 'Install.ps1')
-Copy-Utf8BomText (Join-Path $PSScriptRoot 'Install-Certificate.ps1') `
-    (Join-Path $resolvedStaging 'Install-Certificate.ps1')
 Copy-Utf8BomText (Join-Path $PSScriptRoot 'Uninstall.ps1') `
     (Join-Path $resolvedStaging 'Uninstall.ps1')
 
@@ -132,15 +130,14 @@ $releaseReadme = @"
 Key Overlay $Tag (x64)
 
 1. 이 ZIP을 완전히 압축 해제합니다.
-2. PowerShell에서 다음 명령을 실행합니다.
+2. 관리자 권한 PowerShell에서 다음 명령을 실행합니다.
 
    Set-ExecutionPolicy -Scope Process Bypass -Force
    .\Install.ps1
 
 3. Win + G를 누르고 위젯 메뉴에서 Key Overlay를 연 뒤 핀을 켭니다.
 
-Install.ps1은 UAC 관리자 권한을 요청하여 로컬 컴퓨터 TrustedPeople 저장소에
-공개 서명 인증서를 등록하고,
+Install.ps1은 로컬 컴퓨터 TrustedPeople 저장소에 공개 서명 인증서를 등록하고,
 Microsoft 서명 x64 런타임 종속성과 Key Overlay MSIX를 설치합니다.
 제거하려면 Uninstall.ps1을 실행하세요.
 "@

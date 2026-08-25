@@ -3,6 +3,14 @@ param()
 
 $ErrorActionPreference = 'Stop'
 
+$currentIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+$currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal($currentIdentity)
+$isAdministrator = $currentPrincipal.IsInRole(
+    [System.Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdministrator) {
+    throw '관리자 권한 PowerShell에서 Install.ps1을 실행하세요.'
+}
+
 $package = Get-ChildItem -LiteralPath $PSScriptRoot -File -Filter 'KeyOverlay.Widget_*_x64.msix' |
     Select-Object -First 1
 if (-not $package) {
@@ -29,32 +37,8 @@ $trustedCertificate = Get-ChildItem -LiteralPath 'Cert:\LocalMachine\TrustedPeop
     Where-Object Thumbprint -eq $certificate.Thumbprint |
     Select-Object -First 1
 if (-not $trustedCertificate) {
-    $currentIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-    $currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal($currentIdentity)
-    $isAdministrator = $currentPrincipal.IsInRole(
-        [System.Security.Principal.WindowsBuiltInRole]::Administrator)
-    if ($isAdministrator) {
-        Import-Certificate -FilePath $certificatePath `
-            -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
-    }
-    else {
-        Write-Host '인증서 등록을 위해 관리자 권한을 요청합니다.' -ForegroundColor Yellow
-        $certificateInstaller = Join-Path $PSScriptRoot 'Install-Certificate.ps1'
-        if (-not (Test-Path -LiteralPath $certificateInstaller)) {
-            throw '인증서 설치 도우미를 찾지 못했습니다.'
-        }
-        $windowsPowerShell = Join-Path $env:SystemRoot `
-            'System32\WindowsPowerShell\v1.0\powershell.exe'
-        $elevatedArguments = "-NoProfile -ExecutionPolicy Bypass " +
-            "-File `"$certificateInstaller`" " +
-            "-CertificatePath `"$certificatePath`" " +
-            "-ExpectedThumbprint `"$($certificate.Thumbprint)`""
-        $elevatedProcess = Start-Process -FilePath $windowsPowerShell -Verb RunAs `
-            -ArgumentList $elevatedArguments -Wait -PassThru
-        if ($elevatedProcess.ExitCode -ne 0) {
-            throw "인증서 등록이 완료되지 않았습니다. 종료 코드: $($elevatedProcess.ExitCode)"
-        }
-    }
+    Import-Certificate -FilePath $certificatePath `
+        -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
 }
 $trustedCertificate = Get-ChildItem -LiteralPath 'Cert:\LocalMachine\TrustedPeople' |
     Where-Object Thumbprint -eq $certificate.Thumbprint |
